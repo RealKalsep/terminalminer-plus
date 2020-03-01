@@ -31,11 +31,12 @@ class graphicError(Exception):
         self.text = txt
 
 class Object:
-    def __init__(self, symbol, color, name, level=0):
+    def __init__(self, symbol, color, name, level=0, collision=False):
         self.symbol = symbol
         self.color = color
         self.name = name
         self.level = level
+        self.collision = collision
 
     def setProperties(self, bottomObject, isFluid=False):
         self.bottomObject = bottomObject
@@ -91,6 +92,7 @@ class Grid:
             self.gridWidth = x
 
     def draw(self, mode=0):
+        system("cls")
         
         if mode == 0:
             for i in range(0, len(self.grid)):
