@@ -24,9 +24,16 @@ def key_listen():
     global changes
     oldPlayerPosition = playerPosition
 
-    if kb.is_pressed("s") and not (playerPosition in range( (gridSize - currentGrid.gridWidth), gridSize) ): #checking if player standing at the bottom. If he is, don't move him.
+    #Sorry for big comparing lines. But i think this is the only way, excluding if-else stairs.
+    #First condition - if key is pressed
+    #Second condition - if player stays near one of 4 borders
+    #Third condition - checking if "destination point" haven't any collision
+
+    #The reason why 1 is being added in <S> and <W> movements is preventing player's offset. 
+
+    if kb.is_pressed("s") and not (playerPosition in range( (gridSize - currentGrid.gridWidth), gridSize) ) and (currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1) * player.velocity].collision ==False): 
         changes.append(True)
-        newPlayerPosition = playerPosition + (currentGrid.gridWidth + 1) * player.velocity #Calculating new player position. Adding 1 to prevent player offset to left.
+        newPlayerPosition = playerPosition + (currentGrid.gridWidth + 1) * player.velocity
 
         currentGrid.grid[oldPlayerPosition] = player.standingOn
         player.standingOn = currentGrid.grid[newPlayerPosition]
@@ -34,9 +41,9 @@ def key_listen():
         playerPosition = newPlayerPosition
         sleep(0.1)
 
-    elif kb.is_pressed("w") and not (playerPosition in range(0, currentGrid.gridWidth)): #checking is player standing at the top. If he is, don't move him
+    elif kb.is_pressed("w") and not (playerPosition in range(0, currentGrid.gridWidth)) and (currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1) * player.velocity) ].collision == False): 
         changes.append(True)
-        newPlayerPosition = playerPosition - (currentGrid.gridWidth + 1) * player.velocity #Calculating new player position. Adding 1 to prevent player offset to left.
+        newPlayerPosition = playerPosition - (currentGrid.gridWidth + 1) * player.velocity 
 
         currentGrid.grid[oldPlayerPosition] = player.standingOn
         player.standingOn = currentGrid.grid[newPlayerPosition]
@@ -44,7 +51,7 @@ def key_listen():
         playerPosition = newPlayerPosition
         sleep(0.1)
 
-    elif kb.is_pressed("d") and ( (playerPosition + 2) % 100 != 0): #checking right border
+    elif kb.is_pressed("d") and ( (playerPosition + 2) % 100 != 0) and (currentGrid.grid[ playerPosition + 1 * player.velocity ].collision == False): 
         changes.append(True)
 
         newPlayerPosition = playerPosition + 1 * player.velocity
@@ -55,7 +62,7 @@ def key_listen():
         playerPosition = newPlayerPosition                      #                                                                                   #
         sleep(0.1)                                              #===================================================================================#
 
-    elif kb.is_pressed("a") and ( playerPosition % 100 != 0 ):
+    elif kb.is_pressed("a") and ( playerPosition % 100 != 0 ) and (currentGrid.grid[ playerPosition - 1 * player.velocity ].collision == False):
         changes.append(True)
 
         newPlayerPosition = playerPosition - 1 * player.velocity
