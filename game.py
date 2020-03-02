@@ -2,11 +2,17 @@ import gridEngine as ge
 import keyboard as kb 
 from time import sleep
 from random import choice, randint
+from os import system
+from pynput.keyboard import Key, Controller
+
+keyboard = Controller()
+
 
 playerPosition = 5
 gridSize = 2001
 
 rock = ge.Object("o", ge.gray, "rock")
+wood = ge.Object("w", ge.sea, "wood")
 player = ge.Player()
 player.standingOn = rock
 
@@ -18,6 +24,37 @@ grid.grid[playerPosition] = player
 
 currentGrid = grid
 changes = []
+
+player.inv.append(rock)
+player.inv.append(rock)
+player.inv.append(wood)
+
+def userInputDefine():
+    pass
+
+def inventoryTab():
+    userInput = None
+    reservedObjects = []
+   
+
+    system("cls")
+    print("YOUR INVENTORY. <HELP> FOR A LIST OF COMMANDS")
+
+    for i in range(0, len(player.inv)):
+        if player.inv.count(player.inv[i]) > 1 and not (player.inv[i] in reservedObjects):
+            print(player.inv[i].name + " x" + str( player.inv.count( player.inv[i] ) ))
+            reservedObjects.append(player.inv[i])
+        elif player.inv.count(player.inv[i]) == 1:
+            print(player.inv[i].name + " x1")
+
+
+    userInput = input()
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+    while userInput != "e":
+        userInput = input()
+        userInputDefine()
+    currentGrid.draw(0)
 
 def key_listen():
     global playerPosition
@@ -72,6 +109,11 @@ def key_listen():
         currentGrid.grid[newPlayerPosition] = player
         playerPosition = newPlayerPosition
         sleep(0.1)
+
+    #TABS OPENING
+
+    elif kb.is_pressed("e"):
+        inventoryTab()
 
 def physicsCalculate():
     pass
