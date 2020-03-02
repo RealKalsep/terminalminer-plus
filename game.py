@@ -7,6 +7,7 @@ from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
 
+creationTabRecipes = []
 
 playerPosition = 5
 gridSize = 2001
@@ -28,6 +29,33 @@ changes = []
 player.inv.append(rock)
 player.inv.append(rock)
 player.inv.append(wood)
+
+class Recipe:
+
+    required = []
+
+    def __init__(self, name, result, *required):
+        self.name = name
+        self.result = result
+        for i in required:
+            self.required.append(i)
+
+    def craft(self):
+        for k in range(0, len(self.required)):
+            player.inv.remove(self.required[k])
+
+        player.inv.append(self.result)
+
+
+
+class Tool:
+    def __init__(self, name, toolID):
+        self.name = name
+        self.toolID = toolID
+
+wooden_pickaxe = Tool("wooden_pickaxe", 1)
+woodpickRecipe = Recipe("wooden_pickaxe", wooden_pickaxe, wood, rock)
+creationTabRecipes.append(woodpickRecipe)
 
 def userInputDefine():
     pass
@@ -54,6 +82,38 @@ def inventoryTab():
     while userInput != "e":
         userInput = input()
         userInputDefine()
+    currentGrid.draw(0)
+
+def creationTab():
+    system('cls')
+
+
+    isPossibleToCraft = []
+    availableRecipes = []
+
+    print("CREATION MENU. \n AVAILABLE BLUEPRINTS:")
+
+    for i in range(0, len(creationTabRecipes)):
+        for j in creationTabRecipes[i].required:
+            if j in player.inv:
+                isPossibleToCraft.append(True)
+            else:
+                isPossibleToCraft.append(False)
+
+        if not (False in isPossibleToCraft):
+            print(creationTabRecipes[i].name)
+            availableRecipes.append(creationTabRecipes[i])
+
+    userInput = input()
+    while userInput != "q":
+        if userInput.startswith("craft"):
+            splitted = userInput.split()
+            for i in range(0, len(availableRecipes)):
+                if splitted[1] == availableRecipes[i].name:
+                    availableRecipes[i].craft()
+                    print("you crafted {0}!".format(availableRecipes[i].name))
+
+        userInput = input()
     currentGrid.draw(0)
 
 def key_listen():
@@ -114,6 +174,9 @@ def key_listen():
 
     elif kb.is_pressed("e"):
         inventoryTab()
+
+    elif kb.is_pressed('q'):
+        creationTab()
 
 def physicsCalculate():
     pass
