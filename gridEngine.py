@@ -46,6 +46,7 @@ class Grid:
     grid = []
     gridWidth = None
     gridHeight = None
+    biome = None
 
     def clearGrid(self):
         if self.grid == []:
@@ -119,6 +120,8 @@ class Player:
 
     velocity = 1
 
+    inv = []
+
     def __init__(self, hp=100, name="sbeve", symbol="@", color=green):
         self.currentHp = hp
         self.maxHp = hp
@@ -142,6 +145,3 @@ class Player:
             
             self.exp = 0 + self.expResidue
             self.level += 1
-            
-
- 
