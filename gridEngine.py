@@ -31,12 +31,16 @@ class graphicError(Exception):
         self.text = txt
 
 class Object:
-    def __init__(self, symbol, color, name, level=0, collision=False):
+
+    toolID = 0
+
+    def __init__(self, symbol, color, name, bottomTile, level=0, collision=False):
         self.symbol = symbol
         self.color = color
         self.name = name
         self.level = level
         self.collision = collision
+        self.bottomTile = bottomTile
 
     def setProperties(self, bottomObject, isFluid=False):
         self.bottomObject = bottomObject
@@ -121,6 +125,7 @@ class Player:
     velocity = 1
 
     inv = []
+    eq = []
 
     def __init__(self, hp=100, name="sbeve", symbol="@", color=green):
         self.currentHp = hp
