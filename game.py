@@ -5,35 +5,46 @@ from random import choice, randint
 from os import system
 from pynput.keyboard import Key, Controller
 
+#update log that shows latest event
 log = None
 
+#for imitating keyborad presses
 keyboard = Controller()
 
+#to store all exsisting recipes
 creationTabRecipes = []
 
+#player's spawn
 playerPosition = 5
+#if you're changing that, change markup value too (line 31)
 gridSize = 2001
 
+#creating some object
 rock = ge.Object("o", ge.gray, "rock", None)
 wood = ge.Object("w", ge.red, "wood", rock)
 stone_wall = ge.Object("█", ge.white, "stone_wall", rock, 0, True)
+
+#creating player and his "trail"
 player = ge.Player()
 player.standingOn = rock
 
+#creating game grid and setting some values of it
 grid = ge.Grid()
-#grid.monoGenerate(rock, gridSize)
 grid.multiGenerate(gridSize, rock, stone_wall)
 grid.markup(100)
 grid.setProperties()
 grid.grid[playerPosition] = player
 
 currentGrid = grid
+#screen updates when True is in this list
 changes = []
 
+#For headstart and pickaxe creating
 player.inv.append(rock)
 player.inv.append(rock)
 player.inv.append(wood)
 
+#generally used in "log" and "equipped" labels under game's grid
 class emptyObject:
     name = None
 
@@ -51,7 +62,7 @@ class Recipe:
             self.required.append(i)
 
     def craft(self):
-        for k in range(0, len(self.required)):
+        for k in range(0, len(self.required)): #don't ask why i'm using k instead of i here...
             player.inv.remove(self.required[k])
 
         player.inv.append(self.result)
@@ -61,7 +72,7 @@ class Recipe:
 class Tool:
     def __init__(self, name, toolID, level, durability):
         self.name = name
-        self.toolID = toolID
+        self.toolID = toolID #0 - not a tool; 1 - pickaxe; 2 - axe; 3 - shovel; 4 - hoe
         self.level = level
         self.durability = durability
 
@@ -69,6 +80,7 @@ wooden_pickaxe = Tool("wooden_pickaxe", 1, 2, 20)
 woodpickRecipe = Recipe("wooden_pickaxe", wooden_pickaxe, wood, rock)
 creationTabRecipes.append(woodpickRecipe)
 
+#commands at "inventory" tab
 def userInputDefine(plrInput):
     if plrInput.startswith("eq"):
         splitted = plrInput.split()
@@ -78,6 +90,7 @@ def userInputDefine(plrInput):
                 print(player.inv[i].name + " equipped")
                 break
 
+#showing inventory tab to a player (line 113)
 def inventoryTab():
     userInput = None
     reservedObjects = []
@@ -85,6 +98,7 @@ def inventoryTab():
 
     system("cls")
     print("YOUR INVENTORY. <HELP> FOR A LIST OF COMMANDS")
+    print("{0}/{1} SPACE LEFT".format(len(player.inv), player.invCapacity))
 
     for i in range(0, len(player.inv)):
         if player.inv.count(player.inv[i]) > 1 and not (player.inv[i] in reservedObjects):
@@ -101,6 +115,7 @@ def inventoryTab():
         userInput = input()
     currentGrid.draw(0)
 
+#showing creation tab to a player
 def creationTab():
     system('cls')
 
@@ -110,6 +125,7 @@ def creationTab():
 
     print("CREATION MENU. \n AVAILABLE BLUEPRINTS:")
 
+    #i hate double loops, they take much more time to understand them
     for i in range(0, len(creationTabRecipes)):
         for j in creationTabRecipes[i].required:
             if j in player.inv:
@@ -121,6 +137,7 @@ def creationTab():
             print(creationTabRecipes[i].name)
             availableRecipes.append(creationTabRecipes[i])
 
+    #defining creation tab commands
     userInput = input()
     while userInput != "q":
         if userInput.startswith("craft"):
@@ -196,12 +213,16 @@ def key_listen():
         creationTab()
 
     #BLOCK BREAKING USING ARROWS
+    #almost everything here is ctrl+c ctrl+v
     try:
         global log
         if kb.is_pressed("right arrow") and currentGrid.grid[ playerPosition + 1 ].collision and player.eq.toolID == 1 and ( (playerPosition + 2) % 100 != 0):
             if currentGrid.grid[ playerPosition + 1 ].level < player.eq.level:
                 currentGrid.grid[playerPosition + 1] = currentGrid.grid[playerPosition + 1].bottomTile
-                player.inv.append(currentGrid.grid[playerPosition + 1])
+                if len(player.inv) < player.invCapacity:
+                    player.inv.append(currentGrid.grid[playerPosition + 1])
+                else:
+                    log = "INVENTORY FULL"
                 currentGrid.draw(0)
                 print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
 
@@ -214,7 +235,10 @@ def key_listen():
         elif kb.is_pressed("left arrow") and ( playerPosition % 100 != 0 ) and (currentGrid.grid[ playerPosition - 1 ].collision) and player.eq.toolID == 1:
             if currentGrid.grid[ playerPosition - 1 ].level < player.eq.level:
                 currentGrid.grid[playerPosition - 1] = currentGrid.grid[playerPosition - 1].bottomTile
-                player.inv.append(currentGrid.grid[playerPosition - 1])
+                if len(player.inv) < player.invCapacity:
+                    player.inv.append(currentGrid.grid[playerPosition - 1])
+                else:
+                    log = 'INVENTORY FULL'
                 currentGrid.draw(0)
                 print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
 
@@ -227,7 +251,10 @@ def key_listen():
         elif kb.is_pressed("up arrow") and not (playerPosition in range(0, currentGrid.gridWidth)) and (currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].collision):
             if currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].level < player.eq.level:
                 currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ] = currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].bottomTile
-                player.inv.append(currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ])
+                if len(player.inv) < player.invCapacity:
+                    player.inv.append(currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ])
+                else:
+                    log = "INVENTORY FULL"
                 currentGrid.draw(0)
                 print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
 
@@ -240,7 +267,10 @@ def key_listen():
         elif kb.is_pressed("down arrow")  and not (playerPosition in range( (gridSize - currentGrid.gridWidth), gridSize) ) and (currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].collision):
             if currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].level < player.eq.level:
                 currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)] = currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].bottomTile
-                player.inv.append(currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)])
+                if len(player.inv) < player.invCapacity:
+                    player.inv.append(currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)])
+                else:
+                    log = "INVENTORY FULL"
                 currentGrid.draw(0)
                 print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
 
@@ -254,10 +284,11 @@ def key_listen():
         pass
 
         
-
+#TODO enemies AI
 def physicsCalculate():
     pass
 
+#GAME LOOP
 currentGrid.draw(0)
 while True:
     previousGrid = currentGrid.grid
