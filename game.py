@@ -19,18 +19,41 @@ playerPosition = 5
 #if you're changing that, change markup value too (line 31)
 gridSize = 2001
 
-#creating some object
+#creating some objects
 rock = ge.Object("o", ge.gray, "rock", None)
-wood = ge.Object("w", ge.red, "wood", rock)
+wood = ge.Object("w", ge.red, "wood", rock, 0, True)
 stone_wall = ge.Object("█", ge.white, "stone_wall", rock, 0, True)
+sand = ge.Object("▒", ge.yellow, "sand", rock)
+sandstone_wall = ge.Object("▓", ge.yellow, "sandstone", rock, 0, True)
+grass = ge.Object("o", ge.green, "grass", rock)
 
 #creating player and his "trail"
 player = ge.Player()
 player.standingOn = rock
 
+class Biome:
+    
+    def __init__(self, name, *surfaceTiles):
+        self.biomeSurfaceBlocks = []
+        self.biomeDeepBlocks = []
+        self.name = name
+        for i in surfaceTiles:
+            self.biomeSurfaceBlocks.append(i)
+
+    def addDeepTiles(self, *deepTiles):
+        for i in deepTiles:
+            self.biomeDeepBlocks.append(i)
+
+desert = Biome("desert", sand, sand, sand, sandstone_wall)
+plains = Biome("plains", rock, grass, grass, grass, grass, wood, wood)
+
+biomes = [desert, plains]
+
+currentLayerBiome = choice(biomes)
+
 #creating game grid and setting some values of it
 grid = ge.Grid()
-grid.multiGenerate(gridSize, rock, stone_wall)
+grid.multiGenerate(gridSize, currentLayerBiome.biomeSurfaceBlocks)
 grid.markup(100)
 grid.setProperties()
 grid.grid[playerPosition] = player
@@ -50,6 +73,7 @@ class emptyObject:
 
 empty = emptyObject
 player.eq = empty
+
 
 class Recipe:
 
@@ -224,7 +248,7 @@ def key_listen():
                 else:
                     log = "INVENTORY FULL"
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -240,7 +264,7 @@ def key_listen():
                 else:
                     log = 'INVENTORY FULL'
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -256,7 +280,7 @@ def key_listen():
                 else:
                     log = "INVENTORY FULL"
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -272,7 +296,7 @@ def key_listen():
                 else:
                     log = "INVENTORY FULL"
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -297,5 +321,5 @@ while True:
     #if previousGrid != currentGrid.grid:
     if True in changes:
         currentGrid.draw(0)
-        print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+        print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
         changes = []
