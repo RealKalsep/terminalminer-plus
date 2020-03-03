@@ -76,9 +76,9 @@ class Grid:
 
             self.grid.pop(0)
 
-    def multiGenerate(self, amount, *args):
+    def multiGenerate(self, amount, objectsLIST):
         for i in range(0, amount):
-            self.grid.append(rd.choice(args))
+            self.grid.append(objectsLIST[rd.randint(0, len(objectsLIST) - 1)])
 
     def setProperties(self):
         if self.grid == []:
