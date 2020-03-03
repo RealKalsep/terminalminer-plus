@@ -125,6 +125,7 @@ class Player:
     velocity = 1
 
     inv = []
+    invCapacity = 50
     eq = []
 
     def __init__(self, hp=100, name="sbeve", symbol="@", color=green):
