@@ -5,6 +5,8 @@ from random import choice, randint
 from os import system
 from pynput.keyboard import Key, Controller
 
+flagToggle = True
+
 keyboard = Controller()
 
 creationTabRecipes = []
@@ -12,13 +14,15 @@ creationTabRecipes = []
 playerPosition = 5
 gridSize = 2001
 
-rock = ge.Object("o", ge.gray, "rock")
-wood = ge.Object("w", ge.sea, "wood")
+rock = ge.Object("o", ge.gray, "rock", None)
+wood = ge.Object("w", ge.red, "wood", rock)
+stone_wall = ge.Object("█", ge.white, "stone_wall", rock, 0, True)
 player = ge.Player()
 player.standingOn = rock
 
 grid = ge.Grid()
-grid.monoGenerate(rock, gridSize)
+#grid.monoGenerate(rock, gridSize)
+grid.multiGenerate(gridSize, rock, stone_wall)
 grid.markup(100)
 grid.setProperties()
 grid.grid[playerPosition] = player
@@ -57,8 +61,14 @@ wooden_pickaxe = Tool("wooden_pickaxe", 1)
 woodpickRecipe = Recipe("wooden_pickaxe", wooden_pickaxe, wood, rock)
 creationTabRecipes.append(woodpickRecipe)
 
-def userInputDefine():
-    pass
+def userInputDefine(plrInput):
+    if plrInput.startswith("eq"):
+        splitted = plrInput.split()
+        for i in range(0, len(player.inv)):
+            if player.inv[i].name == splitted[1]:
+                player.eq = player.inv[i]
+                print(player.inv[i].name + " equipped")
+                break
 
 def inventoryTab():
     userInput = None
@@ -75,13 +85,12 @@ def inventoryTab():
         elif player.inv.count(player.inv[i]) == 1:
             print(player.inv[i].name + " x1")
 
-
+    #keyboard.press(Key.enter)
     userInput = input()
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
+    #keyboard.release(Key.enter)
     while userInput != "e":
+        userInputDefine(userInput)
         userInput = input()
-        userInputDefine()
     currentGrid.draw(0)
 
 def creationTab():
@@ -177,6 +186,32 @@ def key_listen():
 
     elif kb.is_pressed('q'):
         creationTab()
+
+    #BLOCK BREAKING USING ARROWS
+    try:
+        if kb.is_pressed("right arrow") and currentGrid.grid[ playerPosition + 1 ].collision and player.eq.toolID == 1 and ( (playerPosition + 2) % 100 != 0):
+                currentGrid.grid[playerPosition + 1] = currentGrid.grid[playerPosition + 1].bottomTile
+                player.inv.append(currentGrid.grid[playerPosition + 1])
+                currentGrid.draw(0)
+
+        elif kb.is_pressed("left arrow") and ( playerPosition % 100 != 0 ) and (currentGrid.grid[ playerPosition - 1 ].collision) and player.eq.toolID == 1:
+            currentGrid.grid[playerPosition - 1] = currentGrid.grid[playerPosition - 1].bottomTile
+            player.inv.append(currentGrid.grid[playerPosition - 1])
+            currentGrid.draw(0)
+
+        elif kb.is_pressed("up arrow") and not (playerPosition in range(0, currentGrid.gridWidth)) and (currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].collision):
+            currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ] = currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].bottomTile
+            player.inv.append(currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ])
+            currentGrid.draw(0)
+
+        elif kb.is_pressed("down arrow")  and not (playerPosition in range( (gridSize - currentGrid.gridWidth), gridSize) ) and (currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].collision):
+            currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)] = currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].bottomTile
+            player.inv.append(currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)])
+            currentGrid.draw(0)
+    except AttributeError:
+        pass
+
+        
 
 def physicsCalculate():
     pass
