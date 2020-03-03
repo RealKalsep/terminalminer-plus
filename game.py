@@ -5,7 +5,7 @@ from random import choice, randint
 from os import system
 from pynput.keyboard import Key, Controller
 
-flagToggle = True
+log = None
 
 keyboard = Controller()
 
@@ -34,6 +34,12 @@ player.inv.append(rock)
 player.inv.append(rock)
 player.inv.append(wood)
 
+class emptyObject:
+    name = None
+
+empty = emptyObject
+player.eq = empty
+
 class Recipe:
 
     required = []
@@ -53,11 +59,13 @@ class Recipe:
 
 
 class Tool:
-    def __init__(self, name, toolID):
+    def __init__(self, name, toolID, level, durability):
         self.name = name
         self.toolID = toolID
+        self.level = level
+        self.durability = durability
 
-wooden_pickaxe = Tool("wooden_pickaxe", 1)
+wooden_pickaxe = Tool("wooden_pickaxe", 1, 2, 20)
 woodpickRecipe = Recipe("wooden_pickaxe", wooden_pickaxe, wood, rock)
 creationTabRecipes.append(woodpickRecipe)
 
@@ -189,25 +197,59 @@ def key_listen():
 
     #BLOCK BREAKING USING ARROWS
     try:
+        global log
         if kb.is_pressed("right arrow") and currentGrid.grid[ playerPosition + 1 ].collision and player.eq.toolID == 1 and ( (playerPosition + 2) % 100 != 0):
+            if currentGrid.grid[ playerPosition + 1 ].level < player.eq.level:
                 currentGrid.grid[playerPosition + 1] = currentGrid.grid[playerPosition + 1].bottomTile
                 player.inv.append(currentGrid.grid[playerPosition + 1])
                 currentGrid.draw(0)
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+
+                player.eq.durability -= 1
+                if player.eq.durability <= 0:
+                    player.inv.remove(player.eq)
+                    player.eq = empty
+                    log = "PICKAXE BROKE"
 
         elif kb.is_pressed("left arrow") and ( playerPosition % 100 != 0 ) and (currentGrid.grid[ playerPosition - 1 ].collision) and player.eq.toolID == 1:
-            currentGrid.grid[playerPosition - 1] = currentGrid.grid[playerPosition - 1].bottomTile
-            player.inv.append(currentGrid.grid[playerPosition - 1])
-            currentGrid.draw(0)
+            if currentGrid.grid[ playerPosition - 1 ].level < player.eq.level:
+                currentGrid.grid[playerPosition - 1] = currentGrid.grid[playerPosition - 1].bottomTile
+                player.inv.append(currentGrid.grid[playerPosition - 1])
+                currentGrid.draw(0)
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+
+                player.eq.durability -= 1
+                if player.eq.durability <= 0:
+                    player.inv.remove(player.eq)
+                    player.eq = empty
+                    log = "PICKAXE BROKE"
 
         elif kb.is_pressed("up arrow") and not (playerPosition in range(0, currentGrid.gridWidth)) and (currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].collision):
-            currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ] = currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].bottomTile
-            player.inv.append(currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ])
-            currentGrid.draw(0)
+            if currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].level < player.eq.level:
+                currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ] = currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ].bottomTile
+                player.inv.append(currentGrid.grid[ (playerPosition - (currentGrid.gridWidth + 1)) ])
+                currentGrid.draw(0)
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+
+                player.eq.durability -= 1
+                if player.eq.durability <= 0:
+                    player.inv.remove(player.eq)
+                    player.eq = empty
+                    log = "PICKAXE BROKE"
 
         elif kb.is_pressed("down arrow")  and not (playerPosition in range( (gridSize - currentGrid.gridWidth), gridSize) ) and (currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].collision):
-            currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)] = currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].bottomTile
-            player.inv.append(currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)])
-            currentGrid.draw(0)
+            if currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].level < player.eq.level:
+                currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)] = currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)].bottomTile
+                player.inv.append(currentGrid.grid[playerPosition + (currentGrid.gridWidth + 1)])
+                currentGrid.draw(0)
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
+
+                player.eq.durability -= 1
+                if player.eq.durability <= 0:
+                    player.inv.remove(player.eq)
+                    player.eq = empty
+                    log = "PICKAXE BROKE"
+
     except AttributeError:
         pass
 
@@ -215,7 +257,6 @@ def key_listen():
 
 def physicsCalculate():
     pass
-
 
 currentGrid.draw(0)
 while True:
@@ -225,4 +266,5 @@ while True:
     #if previousGrid != currentGrid.grid:
     if True in changes:
         currentGrid.draw(0)
+        print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}".format(player.currentHp, player.maxHp, log, player.eq.name))
         changes = []
