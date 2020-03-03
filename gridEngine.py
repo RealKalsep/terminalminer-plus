@@ -32,7 +32,7 @@ class graphicError(Exception):
 
 class Object:
 
-    toolID = 0
+    #toolID = 0
 
     def __init__(self, symbol, color, name, bottomTile, level=0, collision=False):
         self.symbol = symbol
