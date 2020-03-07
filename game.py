@@ -16,7 +16,7 @@ creationTabRecipes = []
 
 #player's spawn
 playerPosition = 5
-#if you're changing that, change markup value too (line 31)
+#if you're changing that, change markup value too (line 57)
 gridSize = 2001
 
 #creating some objects
