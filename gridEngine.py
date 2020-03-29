@@ -128,9 +128,11 @@ class Player:
     invCapacity = 50
     eq = []
 
-    def __init__(self, hp=100, name="sbeve", symbol="@", color=green):
+    def __init__(self, hp=100, thirst=50, maxThirst=100, name="sbeve", symbol="@", color=green):
         self.currentHp = hp
         self.maxHp = hp
+        self.currentThirst = thirst
+        self.maxThirst = maxThirst
         self.name = name
         self.symbol = symbol
         self.color = green

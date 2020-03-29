@@ -8,15 +8,15 @@ from pynput.keyboard import Key, Controller
 #update log that shows latest event
 log = None
 
-#for imitating keyborad presses
+#imitating keyboard presses
 keyboard = Controller()
 
-#to store all exsisting recipes
+#store all existing recipes
 creationTabRecipes = []
 
 #player's spawn
 playerPosition = 5
-#if you're changing that, change markup value too (line 57)
+#if you're changing this, change markup value too (line 57)
 gridSize = 2001
 
 #creating some objects
@@ -26,6 +26,7 @@ stone_wall = ge.Object("█", ge.white, "stone_wall", rock, 0, True)
 sand = ge.Object("▒", ge.yellow, "sand", rock)
 sandstone_wall = ge.Object("▓", ge.yellow, "sandstone", rock, 0, True)
 grass = ge.Object("o", ge.green, "grass", rock)
+water = ge.Object("w", ge.blue, "water", rock, 999, False)
 
 #creating player and his "trail"
 player = ge.Player()
@@ -44,10 +45,13 @@ class Biome:
         for i in deepTiles:
             self.biomeDeepBlocks.append(i)
 
-desert = Biome("desert", sand, sand, sand, sandstone_wall)
-plains = Biome("plains", rock, grass, grass, grass, grass, wood, wood)
+#desert biome has a lot of copy&pasted sand and sandstone_wall, need to shorten that with some way
+desert = Biome("desert", sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, sand, sand, sand, sandstone_wall, water)
+plains = Biome("plains", rock, grass, grass, grass, grass, wood, wood, water)
+ocean = Biome("ocean", water)
+forest = Biome("forest", grass, grass, grass, wood, wood, wood, wood, wood, water)
 
-biomes = [desert, plains]
+biomes = [desert, plains, ocean, forest]
 
 currentLayerBiome = choice(biomes)
 
@@ -96,7 +100,7 @@ class Recipe:
 class Tool:
     def __init__(self, name, toolID, level, durability):
         self.name = name
-        self.toolID = toolID #0 - not a tool; 1 - pickaxe; 2 - axe; 3 - shovel; 4 - hoe
+        self.toolID = toolID #0 - hand; 1 - pickaxe; 2 - axe; 3 - shovel; 4 - hoe
         self.level = level
         self.durability = durability
 
@@ -121,7 +125,8 @@ def inventoryTab():
    
 
     system("cls")
-    print("YOUR INVENTORY. <HELP> FOR A LIST OF COMMANDS")
+    print("INVENTORY")
+    print("")
     print("{0}/{1} SPACE LEFT".format(len(player.inv), player.invCapacity))
 
     for i in range(0, len(player.inv)):
@@ -248,7 +253,7 @@ def key_listen():
                 else:
                     log = "INVENTORY FULL"
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}\tTHIRST {5}/{6}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name, player.currentThirst, player.maxThirst))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -264,7 +269,7 @@ def key_listen():
                 else:
                     log = 'INVENTORY FULL'
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}\tTHIRST {5}/{6}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name, player.currentThirst, player.maxThirst))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -280,7 +285,7 @@ def key_listen():
                 else:
                     log = "INVENTORY FULL"
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}\tTHIRST {5}/{6}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name, player.currentThirst, player.maxThirst))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
@@ -296,13 +301,14 @@ def key_listen():
                 else:
                     log = "INVENTORY FULL"
                 currentGrid.draw(0)
-                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
+                print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}\tTHIRST {5}/{6}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name, player.currentThirst, player.maxThirst))
 
                 player.eq.durability -= 1
                 if player.eq.durability <= 0:
                     player.inv.remove(player.eq)
                     player.eq = empty
                     log = "PICKAXE BROKE"
+
 
     except AttributeError:
         pass
@@ -318,8 +324,16 @@ while True:
     previousGrid = currentGrid.grid
     key_listen()
     physicsCalculate()
+    #sleep(1)
+    player.currentThirst -= 1
+    if player.standingOn == water:
+        player.currentThirst += 1
+        sleep(0.3)
+        if player.currentThirst == player.currentThirst > player.maxThirst:
+            player.currentThirst -= 1
+
     #if previousGrid != currentGrid.grid:
     if True in changes:
         currentGrid.draw(0)
-        print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name))
+        print("HP {0}/{1}\tLOG: {2}\tEQUIPPED:{3}\tBIOME:{4}\tTHIRST {5}/{6}".format(player.currentHp, player.maxHp, log, player.eq.name, currentLayerBiome.name, player.currentThirst, player.maxThirst))
         changes = []
