@@ -42,6 +42,7 @@ class Object:
         self.level = level
         self.collision = collision
         self.bottomTile = bottomTile
+        self.objectId = 0
 
     def setProperties(self, bottomObject, isFluid=False):
         self.bottomObject = bottomObject
