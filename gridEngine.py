@@ -19,6 +19,7 @@ canary = "\u001b[33;1m"
 sea = "\u001b[34;1m"
 pink = "\u001b[35;1m"
 sky = "\u001b[36;1m"
+khaki = "\u001b[221;1m"
 boldWhite = "\u001b[37;1m"
 reset = "\u001b[0m"
 
@@ -110,8 +111,8 @@ class Grid:
                     raise graphicError("Illegal data in grid! Only objects and new line symbols are allowed!")
         if mode == 1:
             print(self.grid)
-        #else:
-            #raise graphicError("Wrong drawing mode given.")
+        """else:
+            raise graphicError("Wrong drawing mode given.")"""
 
 class Player:
 
@@ -128,14 +129,17 @@ class Player:
     invCapacity = 50
     eq = []
 
-    def __init__(self, hp=100, thirst=50, maxThirst=100, name="sbeve", symbol="@", color=green):
+    def __init__(self, hp=100, thirst=100, maxThirst=100, minThirst=0, name="mars", symbol="@", item=0, position=5, color=orange):
         self.currentHp = hp
         self.maxHp = hp
         self.currentThirst = thirst
         self.maxThirst = maxThirst
+        self.minThirst = minThirst
         self.name = name
         self.symbol = symbol
-        self.color = green
+        self.item = item
+        self.position = position
+        self.color = color
 
     def isDead(self):
         if self.currentHp <= 0:
