@@ -15,4 +15,10 @@
 ![screenshot_n](https://i.imgur.com/i6AiuuR.png)
 
 **Desert**
-![screenshot_n](https://i.imgur.com/JMfqX0j.png)
+![screenshot_n](https://i.imgur.com/j3lBJ6k.png)
+
+**Forest**
+![screenshot_n](https://i.imgur.com/DqDxXLy.png)
+
+**Ocean**
+![screenshot_n](https://i.imgur.com/1imOBMi.png)
