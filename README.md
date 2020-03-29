@@ -34,6 +34,7 @@ Once it's done, click run.cmd or type in "py game.py" (without the quotes!)
 * Health and Thirst updates only when you move.
 * Thirst still goes under 0 (it minuses) when you move. It should be OK when you stand on water.
 * Bottom grid appears after you first move.
+* Flicking (not recommended for people with epilepsy!)
 
 # Planned features
 * Lava
