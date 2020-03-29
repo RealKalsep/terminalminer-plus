@@ -361,7 +361,7 @@ while True:
             player.currentThirst = player.minThirst
 
     
-    if player.currentThirst < player.minThirst or player.minThirst:
+    if player.currentThirst == player.minThirst:
         player.currentHp -= 1
         sleep(0.3)
     
