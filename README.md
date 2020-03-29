@@ -12,7 +12,7 @@
 
 # Biomes
 **Plains**
-![screenshot_n](https://i.imgur.com/i6AiuuR.png)
+![screenshot_n](https://i.imgur.com/szSbDG6.png)
 
 **Desert**
 ![screenshot_n](https://i.imgur.com/j3lBJ6k.png)
