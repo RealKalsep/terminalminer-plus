@@ -1,4 +1,4 @@
-# pyrpg
+# terminalminer-plus
 
 # Keys
 * Move with the WASD keys
